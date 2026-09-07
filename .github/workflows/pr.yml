@@ -72,10 +72,16 @@ jobs:
       - name: Validate agent skills
         run: pnpm ng-dev misc validate-skills
       - name: Check commit message
+        # github.event.pull_request.* is empty on workflow_dispatch.
+        if: github.event_name == 'pull_request'
         run: pnpm ng-dev commit-message validate-range ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
       - name: Check code format
+        # github.event.pull_request.* is empty on workflow_dispatch.
+        if: github.event_name == 'pull_request'
         run: pnpm ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
       - name: Check Package Licenses
+        # Wraps actions/dependency-review-action, which only supports pull_request.
+        if: github.event_name == 'pull_request'
         uses: angular/dev-infra/github-actions/linting/licenses@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
         with:
           allow-dependencies-licenses: 'pkg:npm/google-protobuf@'
@@ -103,6 +109,11 @@ jobs:
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Setup Bazel RBE
+        # Fork-context: configure-remote AES-decrypts its embedded RBE credential with a
+        # key derived from GITHUB_REPOSITORY_OWNER, so it only decrypts under "angular".
+        # https://github.com/angular/dev-infra/blob/main/github-actions/bazel/configure-remote/constants.ts
+        # Skipped on forks; Bazel then builds with local execution.
+        if: github.repository == 'angular/angular'
         uses: angular/dev-infra/github-actions/bazel/configure-remote@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Install node modules
         run: pnpm install --frozen-lockfile
@@ -140,6 +151,11 @@ jobs:
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Setup Bazel Remote Caching
+        # Fork-context: configure-remote AES-decrypts its embedded RBE credential with a
+        # key derived from GITHUB_REPOSITORY_OWNER, so it only decrypts under "angular".
+        # https://github.com/angular/dev-infra/blob/main/github-actions/bazel/configure-remote/constants.ts
+        # Skipped on forks; Bazel then builds with local execution.
+        if: github.repository == 'angular/angular'
         uses: angular/dev-infra/github-actions/bazel/configure-remote@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Install node modules
         run: pnpm install --frozen-lockfile
@@ -150,7 +166,8 @@ jobs:
           # TODO(devversion): Remove when removing pnpm.
           ASPECT_RULES_JS_FROZEN_PNPM_LOCK: '1'
       - name: Upload GRPC logs (for debugging of RBE issues)
-        if: always()
+        # /tmp/rbe-grpc.log only exists when the RBE step above ran.
+        if: always() && github.repository == 'angular/angular'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           path: /tmp/rbe-grpc.log
@@ -177,6 +194,11 @@ jobs:
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Setup Bazel Remote Caching
+        # Fork-context: configure-remote AES-decrypts its embedded RBE credential with a
+        # key derived from GITHUB_REPOSITORY_OWNER, so it only decrypts under "angular".
+        # https://github.com/angular/dev-infra/blob/main/github-actions/bazel/configure-remote/constants.ts
+        # Skipped on forks; Bazel then builds with local execution.
+        if: github.repository == 'angular/angular'
         uses: angular/dev-infra/github-actions/bazel/configure-remote@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Install node modules
         run: pnpm install --frozen-lockfile
@@ -205,6 +227,11 @@ jobs:
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Setup Bazel RBE
+        # Fork-context: configure-remote AES-decrypts its embedded RBE credential with a
+        # key derived from GITHUB_REPOSITORY_OWNER, so it only decrypts under "angular".
+        # https://github.com/angular/dev-infra/blob/main/github-actions/bazel/configure-remote/constants.ts
+        # Skipped on forks; Bazel then builds with local execution.
+        if: github.repository == 'angular/angular'
         uses: angular/dev-infra/github-actions/bazel/configure-remote@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Install node modules
         run: pnpm install --frozen-lockfile
@@ -235,6 +262,11 @@ jobs:
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Setup Bazel RBE
+        # Fork-context: configure-remote AES-decrypts its embedded RBE credential with a
+        # key derived from GITHUB_REPOSITORY_OWNER, so it only decrypts under "angular".
+        # https://github.com/angular/dev-infra/blob/main/github-actions/bazel/configure-remote/constants.ts
+        # Skipped on forks; Bazel then builds with local execution.
+        if: github.repository == 'angular/angular'
         uses: angular/dev-infra/github-actions/bazel/configure-remote@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Install node modules
         run: pnpm install --frozen-lockfile
@@ -263,6 +295,11 @@ jobs:
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Setup Bazel RBE
+        # Fork-context: configure-remote AES-decrypts its embedded RBE credential with a
+        # key derived from GITHUB_REPOSITORY_OWNER, so it only decrypts under "angular".
+        # https://github.com/angular/dev-infra/blob/main/github-actions/bazel/configure-remote/constants.ts
+        # Skipped on forks; Bazel then builds with local execution.
+        if: github.repository == 'angular/angular'
         uses: angular/dev-infra/github-actions/bazel/configure-remote@f826089a718c89f9ce3d6a0d3e155fbc0fb4a3de # main
       - name: Install node modules
         run: pnpm install --frozen-lockfile
